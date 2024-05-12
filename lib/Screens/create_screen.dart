@@ -29,7 +29,7 @@ class _CreateScreenState extends State<CreateScreen> {
   void loadExistingData() async {
     setState(() => isLoading = true);
     try {
-      var document = await FirebaseFirestore.instance.collection('entries').doc(widget.documentId).get();
+      var document = await FirebaseFirestore.instance.collection('model').doc(widget.documentId).get();
       var data = document.data();
       if (data != null) {
         titleController.text = data['title'];
@@ -45,16 +45,18 @@ class _CreateScreenState extends State<CreateScreen> {
   void handleSubmit() async {
     if (_formKey.currentState!.validate()) {
       setState(() => isLoading = true);
-      try {
-        var collection = FirebaseFirestore.instance.collection('entries');
-        var dateTimeNow = DateTime.now();
-        var data = {
-          'title': titleController.text,
-          'description': descriptionController.text,
-          'uploaderName': uploaderNameController.text,
-          'createdAt': dateTimeNow,
-        };
+      var collection = FirebaseFirestore.instance.collection('model');
+      var dateTimeNow = DateTime.now();
+      var profilePictureUrl = ''; // Generate or fetch the profile picture URL
+      var data = {
+        'title': titleController.text,
+        'description': descriptionController.text,
+        'uploaderName': uploaderNameController.text,
+        'profilePicture': profilePictureUrl,
+        'createdAt': dateTimeNow,
+      };
 
+      try {
         if (widget.documentId == null) {
           await collection.add(data);
         } else {
@@ -68,56 +70,102 @@ class _CreateScreenState extends State<CreateScreen> {
     }
   }
 
+  void handleDelete() async {
+    if (widget.documentId != null) {
+      setState(() => isLoading = true);
+      await FirebaseFirestore.instance.collection('model').doc(widget.documentId).delete();
+      Navigator.pop(context);
+      setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.documentId == null ? 'Create Entry' : 'Edit Entry'),
+        actions: [
+          if (widget.documentId != null)
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: handleDelete,
+            ),
+        ],
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                controller: titleController,
-                decoration: InputDecoration(labelText: 'Title'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: uploaderNameController,
-                decoration: InputDecoration(labelText: 'Uploader Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an uploader name';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: handleSubmit,
-                child: Text(widget.documentId == null ? 'Create' : 'Update'),
-              ),
-            ],
+          : SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  controller: titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.title),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a title';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.description),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a description';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: uploaderNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Uploader Name',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an uploader name';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: handleSubmit,
+                  child: Text(widget.documentId == null ? 'Create' : 'Update'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(double.infinity, 50), // full width
+                  ),
+                ),
+                if (widget.documentId != null)
+                  SizedBox(height: 10),
+                if (widget.documentId != null)
+                  ElevatedButton(
+                    onPressed: handleDelete,
+                    child: Text('Delete'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      minimumSize: Size(double.infinity, 50), // full width
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

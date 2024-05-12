@@ -1,18 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'Screens/auth_widget.dart';
 import 'Screens/home_screen.dart';
 import 'Screens/login_screen.dart';
 import 'Screens/signup_screen.dart';
-import 'Screens/welcome.dart';
-
+import 'Screens/welcome_screen.dart';
+import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  var db = FirebaseFirestore.instance;
-
-  runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,22 +20,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Tasky',
       theme: ThemeData(
-        textTheme: const TextTheme(
-          bodyMedium: TextStyle(
-            fontFamily: 'Ubuntu',
-          ),
+        primarySwatch: Colors.blue,
+        fontFamily: 'Ubuntu',
+      ),
+      // Initial route
+      initialRoute: '/',
+      routes: {
+        '/': (context) =>  AuthWidget(
+          signedInBuilder: (context) =>  WelcomeScreen(),
+          nonSignedInBuilder: (context) => const HomeScreen(),
         ),
-      ),
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          return snapshot.hasData ? const WelcomeScreen() : const HomeScreen();
-        },
-      ),
+        LoginScreen.routeName: (context) => LoginScreen(),
+        SignUpScreen.routeName: (context) => SignUpScreen(),
+        WelcomeScreen.routeName: (context) => WelcomeScreen(),
+      },
     );
   }
 }
