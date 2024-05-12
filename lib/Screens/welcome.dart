@@ -22,7 +22,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              Navigator.of(context).popUntil((route) => route.isFirst); // Navigate back to the first screen, which should be the login screen
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           )
         ],
@@ -47,7 +47,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 title: Text(document['title']),
                 subtitle: Text(document['description']),
                 onTap: () {
-                  // Navigate to the CreateScreen for editing
                   Navigator.push(
                     context,
                     MaterialPageRoute(

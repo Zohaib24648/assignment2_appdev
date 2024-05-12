@@ -1,10 +1,7 @@
-import 'package:assignment2_appdev/Screens/welcome.dart';
-import 'package:flutter/material.dart';
-import 'package:assignment2_appdev/components/components.dart';
-import 'package:assignment2_appdev/Screens/login_screen.dart';
 import 'package:assignment2_appdev/Screens/signup_screen.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'login_screen.dart'; // Correct import based on your structure
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
   User? user;
 
-  void handlegoogleSignIn() async {
+  void handleGoogleSignIn() async {
     try {
       GoogleAuthProvider googleAuthProvider = GoogleAuthProvider();
       auth.signInWithProvider(googleAuthProvider);
@@ -44,62 +41,57 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // const TopScreenImage(screenImageName: 'home.jpg'),
             Expanded(
               child: Padding(
-                padding:
-                    const EdgeInsets.only(right: 15.0, left: 15, bottom: 15),
+                padding: const EdgeInsets.only(right: 15.0, left: 15, bottom: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    const ScreenTitle(title: 'Hello'),
-                    // const Text(
-                    //   'Welcome to Tasky, where you manage your daily tasks',
-                    //   textAlign: TextAlign.center,
-                    //   style: TextStyle(
-                    //     color: Colors.grey,
-                    //     fontSize: 20,
-                    //   ),
-                    // ),
-                    const SizedBox(
-                      height: 15,
+                    const Text(
+                      'Welcome to Tasky, where you manage your daily tasks',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 20,
+                      ),
                     ),
+                    const SizedBox(height: 15),
                     Hero(
                       tag: 'login_btn',
-                      child: CustomButton(
-                        buttonText: 'Login',
+                      child: ElevatedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, LoginScreen.id);
                         },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Theme.of(context).primaryColor, // Background color
+                        ),
+                        child: Text('Login', style: TextStyle(color: Colors.white)),
                       ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                    const SizedBox(height: 10),
                     Hero(
                       tag: 'signup_btn',
-                      child: CustomButton(
-                        buttonText: 'Sign Up',
-                        isOutlined: true,
+                      child: OutlinedButton(
                         onPressed: () {
                           Navigator.pushNamed(context, SignUpScreen.id);
                         },
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Theme.of(context).primaryColor), // Border color
+                        ),
+                        child: Text('Sign Up', style: TextStyle(color: Theme.of(context).primaryColor)),
                       ),
                     ),
-                    const SizedBox(
-                      height: 25,
-                    ),
+                    const SizedBox(height: 25),
                     const Text(
                       'Sign up using',
                       style: TextStyle(
@@ -111,26 +103,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          onPressed: () {
-                            handlegoogleSignIn();
-                          },
-                          icon:  const Icon(
-                            EvaIcons.google,
+                          onPressed: handleGoogleSignIn,
+                          icon: const Icon(
+                            Icons.g_translate,
                             color: Colors.red,
                           ),
                         ),
                         IconButton(
-                          onPressed: () {},
-                          icon:  const Icon(
-                            EvaIcons.facebook,
-                            color: Colors.blue,
-                          ),),
-                        IconButton(
-                          onPressed: () {print('Twitter');},
+                          onPressed: () {}, // Placeholder for other auth methods
                           icon: const Icon(
-                            Icons.facebook ),)
+                            Icons.facebook,
+                            color: Colors.blue,
+                          ),
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

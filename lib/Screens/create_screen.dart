@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateScreen extends StatefulWidget {
-  final String? documentId; // Used for editing existing entries
+  final String? documentId;
 
   const CreateScreen({Key? key, this.documentId}) : super(key: key);
 
@@ -21,7 +21,6 @@ class _CreateScreenState extends State<CreateScreen> {
   @override
   void initState() {
     super.initState();
-    // Load existing data if editing
     if (widget.documentId != null) {
       loadExistingData();
     }
@@ -30,10 +29,7 @@ class _CreateScreenState extends State<CreateScreen> {
   void loadExistingData() async {
     setState(() => isLoading = true);
     try {
-      var document = await FirebaseFirestore.instance
-          .collection('entries')
-          .doc(widget.documentId)
-          .get();
+      var document = await FirebaseFirestore.instance.collection('entries').doc(widget.documentId).get();
       var data = document.data();
       if (data != null) {
         titleController.text = data['title'];
@@ -57,7 +53,6 @@ class _CreateScreenState extends State<CreateScreen> {
           'description': descriptionController.text,
           'uploaderName': uploaderNameController.text,
           'createdAt': dateTimeNow,
-          // Optionally add profilePicture if required
         };
 
         if (widget.documentId == null) {
