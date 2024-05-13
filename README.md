@@ -7,3 +7,4 @@
 ![Image 5](images/5.jpg)
 ![Image 6](images/6.jpg)
 ![Image 7](images/7.jpg)
+[View Video](images/video.mp4)
